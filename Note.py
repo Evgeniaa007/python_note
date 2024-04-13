@@ -36,3 +36,9 @@ class Note:
 
     def set_date(note):
         note.date = str(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+
+    def to_string(note):
+        return note.id + ';' + note.title + ';' + note.body + ';' + note.date
+
+    def map_note(note):
+        return '\nID: ' + note.id + '\n' + 'Заголовок: ' + note.title + '\n' + 'Текст: ' + note.body + '\n' + 'Дата создания: ' + note.date
