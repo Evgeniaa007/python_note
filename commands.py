@@ -1,87 +1,89 @@
-import Note
-import file_functions as ff
+import Note as model
+import file_functions as file_operation
 
 class Commands:
 
+    '''Добавление заметки'''
     def add_note():
-        title = input("Введите заголовок:\n")
-        body = input("Введите текст заметки:\n")
-        note = Note.Note(title=title, body=body)
-        array_notes = ff.read_file()
-        for i in array_notes:
-            if Note.Note.get_id(note) == Note.Note.get_id(i):
-                Note.Note.set_id(note)
-        array_notes.append(note)
-        ff.write_file(array_notes, 'a')
-        print("Заметка создана")
+        title = input("Введите заголовок заметки: ")
+        body = input("Введите описание заметки: ")
+        note = model.Note(title=title, body = body) # Создание экземплеяра класса заметки
+        array_notes = file_operation.read_file() # Создание массива с заметками и чтение его в существующем файле
+        # Прохождение по созданному массиву с заметками и проверка созданной заметки на уникаольность id в существующем массиве
+        for i in array_notes: 
+            for j in array_notes:
+                if model.Note.get_id(note) == model.Note.get_id(j): # Если id созданной заметки равен id любой другой заметки
+                    model.Note.set_id(note) # Увеличиваем ей id с помощью метода counter()
+        array_notes.append(note) # Добавляем созданную заметку в массив с заметками
+        file_operation.save_to_json(array_notes) # Запись массива с заметками в файл
+        print("Заметка добавлена в журнал заметок!")
 
 
-    def edit_note():
-        title = input("Введите заголовок заметки, которую хотите изменить: \n")
-        array_notes = ff.read_file()
+    '''Удаление заметки'''
+    def del_notes():
+        id = input("Введите ID удаляемой заметки: ")
+        array_notes = file_operation.read_file() # Создание массива с заметками и чтение его в существующем файле
         flag = True
-        edited_array = []
-        for i in array_notes:
-            if title == Note.Note.get_title(i):
-                new_title = input("Введите новый заголовок: \n")
-                Note.Note.set_title(i, new_title)
-                new_body = input("Введите новый текст заметки: \n")
-                Note.Note.set_title(i, new_body)      
-                Note.Note.set_date(i)
+        for note in array_notes:
+            if id == model.Note.get_id(note):
+                array_notes.remove(note)
                 flag = False
-            edited_array.append(i)
-        if flag == False:
-            ff.write_file(edited_array, 'a')
-            print("Редактирование заметки завершено")
+        if flag: # Если flag остался неизменным, значит такого id нет
+            print("нет такого id")
         else:
-            print("Заметки с таким названием не существует")
+            file_operation.save_to_json(array_notes)
+            print("Заметка с id: ", id, " успешно удалена!")
 
 
-    def del_note():
-        title = input("Введите заголовок заметки для удаления: \n")
-        array_notes = ff.read_file()
+    '''Редактирование заметки'''
+    def change_note():
+        id = input("Введите ID изменяемой заметки: ")
+        array_notes = file_operation.read_file()
         flag = True
-        for i in array_notes:
-            if title == Note.Note.get_title(i):
-                array_notes.remove(i)
-                flag == False
-        if flag == False:
-            ff.write_file(array_notes, 'a')
-            print("Заметка удалена")
+        array_notes_new = [] # Создание нового пустого массива 
+        for note in array_notes:
+            if id == model.Note.get_id(note):
+                note.title = input("измените  заголовок: ")
+                note.body = input("измените  описание: ")
+                model.Note.set_date(note)
+                flag = False
+            array_notes_new.append(note)
+
+        if flag:
+            print("нет такого id")
         else:
-            print("Заметки с таким названием не существует")
+            file_operation.save_to_json(array_notes_new)
+            print("Заметка с id: ", id, " успешно изменена!")
 
-    
-    def show_note(text):
-        array_notes = ff.read_file()
 
-        if text == "all":
-            print("Заметки:")
-            for i in array_notes:
-                print(Note.Note.map_note(i))
-
-        elif text == "ID":
-            for i in array_notes:
-                print("ID: ", Note.Note.get_id(i))
-            id = input("\nВведите ID заметки: ")
+    '''Вывод журнала'''
+    def show(text):
+        array_notes = file_operation.read_file() # Создание массива с заметками и чтение его в файле
+        if text.__eq__("all"):
+            print("ЖУРНАЛ ЗАМЕТОК:")
+            for note in array_notes:
+                print(model.Note.show_note(note))
+        
+        elif text.__eq__("ID"):
+            for note in array_notes:
+                print("ID: ", model.Note.get_id(note)) # Получение всех id в массиве заметок
+            id = input("Введите id заметки: ")
             flag = True
-            for i in array_notes:
-                if id == Note.Note.get_id(i):
-                    print(Note.Note.map_note(i))
+            for note in array_notes:
+                if id == model.Note.get_id(note):
+                    print(model.Note.show_note(note))
                     flag = False
-            if flag:
+            if flag: # Если flag остался неизменным, значит такого id нет
                 print("Нет такого ID")
 
-        elif text == "date":
+        elif text.__eq__("date"):
+            for note in array_notes:
+                print("date: ", model.Note.get_creation_date(note)) # Получение всех date в массиве заметок
             date = input("Введите дату в формате: dd.mm.yyyy: ")
             flag = True
-            for i in array_notes:
-                date_note = str(Note.Note.get_date(i))
-                if date == date_note[:10]:
-                    print(Note.Note.map_note(i))
+            for note in array_notes:
+                if date in model.Note.get_creation_date(note):
+                    print(model.Note.show_note(note))
                     flag = False
-            if flag:
-                print("В эту дату нет сохраненных заметок")
-        else:
-            print("Нет сохраненных заметок")
-        
+            if flag: # Если flag остался неизменным, значит такой даты нет
+                print("Нет такой даты")

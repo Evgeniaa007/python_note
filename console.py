@@ -1,37 +1,37 @@
-import Menu
-from commands import Commands as com
+import Menu as menu
+from commands import Commands as func
 
 """ Метод вызова из меню команд"""
 def start():
     flag = True
     while flag:
-        Menu.Menu.menu_console()
-        user_input = input('Выберите действие: ')
+        menu.Menu.menu_console()
+        user_input = input('Выберите пункт из меню: ')
         
         if user_input == '0': # выход
-            print('Приложение "заметки" завершило работу')
+            print('Приложение "заметки" завершено')
             flag = False
 
         elif user_input == '1': # вывод журнала
-                com.show_note("all")           
+            func.show('all')
         
         elif user_input == '2': # вывод заметки по id
-            com.show_note('ID')                 
-
+            func.show('ID')
+        
         elif user_input == '3': # выбор заметки по дате
-            com.show_note('date')               
-
+            func.show('date')
+        
         elif user_input == '4': # редактирование заметки
-            com.show_note('all')                
-            com.edit_note()               
-
+            func.show('all')
+            func.change_note()
+        
         elif user_input == '5': # добавление заметки
-            com.add_note()                  
+            func.add_note()
         
         elif user_input == '6': # удаление заметки
-            com.show_note('all')                
-            com.del_note()                
-
+            func.show('all')
+            func.del_notes()
+              
         else:
-            print('Такого действия не существует')
-            return
+            print('Такого действия нет!')
+            #return
