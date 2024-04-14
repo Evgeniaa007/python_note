@@ -1,9 +1,12 @@
 from datetime import date
 import datetime
 
+from counter import counter
+
 class Note:
 
     def __init__ (self, id, title, body, creation_date):
+        id = str(counter.counter())
         self.id = id
         self.title = title
         self.body = body
@@ -26,7 +29,7 @@ class Note:
     #Сеттеры#
 
     def set_id(note, id):
-        note.id = id
+        note.id = id=str(counter.counter())
 
     def set_title(note, title):
         note.title = title
